@@ -17,6 +17,9 @@ OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL")
 
 
 def load_pdfs_from_folder(folder_path: str) :
+    if not os.path.exists(folder_path) or not os.listdir(folder_path):
+        raise FileNotFoundError(f"❌ No PDFs found in given folder - /{folder_path}.")
+
     text = ""
     for file in os.listdir(folder_path) :
         if file.endswith(".pdf"):
@@ -41,6 +44,11 @@ def create_vector_store(chunks) :
 
 def load_vector_store():
     embedding = OpenAIEmbeddings(model = OPENAI_EMBEDDING_MODEL)
+
+    #Check FAISS index before loading 
+    if not os.path.exists("db/faiss-index"):
+        raise FileNotFoundError("❌ No FAISS index found. Please upload documents and rebuild the index first.")
+
     return FAISS.load_local("db/faiss-index", embedding, allow_dangerous_deserialization=True)
 
 

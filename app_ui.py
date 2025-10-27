@@ -93,11 +93,14 @@ if uploaded_files:
 # Step 3: Build FAISS index on button click
 
 if st.sidebar.button("🔄 Rebuild FAISS Index"):
-    with st.spinner("Indexing documents..."):
-        text = load_pdfs_from_folder(DATA_DIR)
-        chunks = split_txt(text)
-        create_vector_store(chunks)
-    disapper_msg("📂 Documents indexed successfully!", "success", 3)
+    try:
+        with st.spinner("Indexing documents..."):
+            text = load_pdfs_from_folder(DATA_DIR)
+            chunks = split_txt(text)
+            create_vector_store(chunks)
+        disapper_msg("📂 Documents indexed successfully!", "success", 3)
+    except FileNotFoundError as ex:
+        st.error(str(ex))
 
 # Reset FAISS Index, Uploaded files and Clear Chat History
 if existing_files:
@@ -110,10 +113,10 @@ if existing_files:
             disapper_msg("📂 Uploaded Files reset successfully!", "success", 2)
         refresh_ui()
 
-    if st.sidebar.button("🗑️ Clear Chat History") :
-        st.session_state["chat_history"].clear()
-        disapper_msg("🕘 Cleared Chat history successfully!", "success", 3)
-        refresh_ui()
+if st.sidebar.button("🗑️ Clear Chat History") :
+    st.session_state["chat_history"].clear()
+    disapper_msg("🕘 Cleared Chat history successfully!", "success", 3)
+    refresh_ui()
 
 
 #initialize chat_history to save chat histories
@@ -125,15 +128,20 @@ if "chat_history" not in st.session_state:
 user_query = st.text_input("**Ask a question about the uploaded documents:**")
 
 if user_query:
-    with st.spinner("Generating answer..."):
-        response = ask_query(user_query)
-        st.write("**Answer:**", response)
+    try:
+        with st.spinner("Generating answer..."):
+            response = ask_query(user_query)
+            st.write("**Answer:**", response)
 
-        #save history
-        st.session_state["chat_history"].append({
-            "question" : user_query,
-            "answer" : response
-        })
+            #save history
+            st.session_state["chat_history"].append({
+                "question" : user_query,
+                "answer" : response
+            })
+
+    except FileNotFoundError as ex:
+        st.error(str(ex))
+    
     st.divider()
 
 
