@@ -4,10 +4,13 @@ from rag_pipeline import load_pdfs_from_folder, split_txt, create_vector_store, 
 import os
 import time
 import shutil
+from dotenv import load_dotenv
 
 
-DATA_DIR = "data"
-DB_DIR = "db"
+load_dotenv(dotenv_path="app.env")
+
+DATA_DIR = os.getenv("DATA_DIR", "data")
+DB_DIR = os.getenv("DB_DIR", "db")
 
 
 #Refresh UI
@@ -106,10 +109,21 @@ if st.sidebar.button("🔄 Rebuild FAISS Index"):
 if existing_files:
     if st.sidebar.button("🗑️ Reset All") :
         if os.path.exists(DB_DIR):
-            shutil.rmtree(DB_DIR)
+            for fileNm in os.listdir(DB_DIR):
+                path = os.path.join(DB_DIR, fileNm)
+                if os.path.isfile(path):
+                    os.unlink(path)
+                elif os.path.isdir(path):
+                    shutil.rmtree(path)
             disapper_msg("📂 FAISS index reset successfully!", "success", 2)
+        
         if os.path.exists(DATA_DIR):
-            shutil.rmtree(DATA_DIR)
+            for fileNm in os.listdir(DATA_DIR):
+                path = os.path.join(DATA_DIR, fileNm)
+                if os.path.isfile(path):
+                    os.unlink(path)
+                elif os.path.isdir(path):
+                    shutil.rmtree(path)
             disapper_msg("📂 Uploaded Files reset successfully!", "success", 2)
         refresh_ui()
 

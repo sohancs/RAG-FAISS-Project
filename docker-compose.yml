@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  rag-faiss-app:
+    image: rag-faiss-streamlit:latest   
+    build: .
+    container_name: rag-faiss-app
+    ports:
+      - "8501:8501"
+    env_file:
+      - app.env
+    volumes:
+      - ./app/data:/app/data
+      - ./app/db1:/app/db1
+    restart: always

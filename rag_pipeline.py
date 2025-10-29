@@ -15,6 +15,9 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_LLM_MODEL = os.getenv("OPENAI_LLM_MODEL")
 OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL")
 
+DB_DIR = os.getenv("DB_DIR", "db")
+INDEX_DIR = os.getenv("INDEX_DIR", "faiss_index")
+
 
 def load_pdfs_from_folder(folder_path: str) :
     if not os.path.exists(folder_path) or not os.listdir(folder_path):
@@ -39,17 +42,17 @@ def split_txt(text: str) :
 def create_vector_store(chunks) :
     embedding = OpenAIEmbeddings()
     vector_store = FAISS.from_texts(chunks, embedding)
-    vector_store.save_local("db/faiss-index")
+    vector_store.save_local(f"{DB_DIR}/{INDEX_DIR}")
     return vector_store
 
 def load_vector_store():
     embedding = OpenAIEmbeddings(model = OPENAI_EMBEDDING_MODEL)
 
     #Check FAISS index before loading 
-    if not os.path.exists("db/faiss-index"):
+    if not os.path.exists(f"{DB_DIR}/{INDEX_DIR}"):
         raise FileNotFoundError("❌ No FAISS index found. Please upload documents and rebuild the index first.")
 
-    return FAISS.load_local("db/faiss-index", embedding, allow_dangerous_deserialization=True)
+    return FAISS.load_local(f"{DB_DIR}/{INDEX_DIR}", embedding, allow_dangerous_deserialization=True)
 
 
 def get_qa_chain() :
