@@ -21,7 +21,7 @@ INDEX_DIR = os.getenv("INDEX_DIR", "faiss_index")
 
 def load_pdfs_from_folder(folder_path: str) :
     if not os.path.exists(folder_path) or not os.listdir(folder_path):
-        raise FileNotFoundError(f"❌ No PDFs found in given folder - /{folder_path}.")
+        raise FileNotFoundError(f"❌ No PDFs found in given folder - {folder_path}.")
 
     text = ""
     for file in os.listdir(folder_path) :

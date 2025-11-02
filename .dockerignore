@@ -3,6 +3,12 @@ db/*
 .venv/*
 .vscode/*
 .gitignore
+.git
 __pycache__/
 app.env
-README.md
+
+#Docker related files
+.dockerignore
+docker-compose.yml
+Dockerfile
+
