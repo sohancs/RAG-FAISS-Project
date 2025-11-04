@@ -12,8 +12,8 @@ from langchain_core.prompts import PromptTemplate
 load_dotenv(dotenv_path="app.env")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_LLM_MODEL = os.getenv("OPENAI_LLM_MODEL")
-OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL")
+OPENAI_LLM_MODEL = os.getenv("OPENAI_LLM_MODEL", "gpt-4o-mini")
+OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
 
 DB_DIR = os.getenv("DB_DIR", "db")
 INDEX_DIR = os.getenv("INDEX_DIR", "faiss_index")
@@ -61,12 +61,12 @@ def get_qa_chain() :
     retriever = vector_store.as_retriever(search_kwargs={"k":3})
 
     prompt_template = """
-        You are assistant that answers user questions using the provided context.
-        
+        You are professional assistant that answers user questions using the provided context.
+        Also if anwser present in context then give answer in polite & courteous way.
         Treat the context and question as **case-insensitive** — 
         meaning "PROMPT", "prompt", and "Prompt" are the same thing.
        
-         If unsure, summarize what is present.        
+        If unsure, summarize what is present.        
 
         Conext:
         {context}

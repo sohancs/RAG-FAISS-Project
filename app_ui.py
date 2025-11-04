@@ -11,11 +11,15 @@ load_dotenv(dotenv_path="app.env")
 
 DATA_DIR = os.getenv("DATA_DIR", "data")
 DB_DIR = os.getenv("DB_DIR", "db")
-
+MAX_QUERIES = int(os.getenv("MAX_QUERIES", 5))
 
 #Refresh UI
 if "reset_flag" not in st.session_state:
     st.session_state.reset_flag = False
+
+#Store user queries counter
+if "user_queries_count" not in st.session_state:
+    st.session_state.user_queries_count = 1
 
 def refresh_ui() :
     st.session_state.reset_flag = not  st.session_state.reset_flag
@@ -139,19 +143,23 @@ if "chat_history" not in st.session_state:
 
 
 # Step 4: Chat input
-user_query = st.text_input("**Ask a question about the uploaded documents:**")
+user_query = st.text_input("**Ask a question about the uploaded documents and press enter button:**")
 
 if user_query:
     try:
-        with st.spinner("Generating answer..."):
-            response = ask_query(user_query)
-            st.write("**Answer:**", response)
+        if st.session_state.user_queries_count > MAX_QUERIES:
+            st.warning(f"⚠️ You've reached to your {MAX_QUERIES} free queries limit.")
+        else:
+            with st.spinner("Generating answer..."):
+                response = ask_query(user_query)
+                st.write("**Answer:**", response)
+                st.session_state.user_queries_count += 1
 
-            #save history
-            st.session_state["chat_history"].append({
-                "question" : user_query,
-                "answer" : response
-            })
+                #save history
+                st.session_state["chat_history"].append({
+                    "question" : user_query,
+                    "answer" : response
+                })
 
     except FileNotFoundError as ex:
         st.error(str(ex))
