@@ -65,4 +65,8 @@ rag-faiss-streamlit/
 └── db/                 # FAISS index storage
 └── app.env             #config file
 ```
+---
 
+### 🚀 **App hosted on streamlit app**
+
+URL : https://intelligent-assistant.streamlit.app/
